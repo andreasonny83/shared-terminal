@@ -4,16 +4,20 @@ var lwip = require('lwip');
 
 var app = express();
 
-function readImage(res) {
-  lwip.open('public/templates/001.png', function(err, image) {
-    // image.scale(0.5, function(err, image) {
-      console.log(image);
-      image.batch().blur(10);
-      res.status(200).set('Content-Type', 'image/png').send(image);
-    // });
+function renderImage(res, img) {
+  res.status(200).set('Content-Type', 'image/png').send(img);
+}
+
+function readImage(res, overlay) {
+  lwip.open('./public/templates/001.png', function(err, image) {
+    image.batch().contain(800, 800).paste(0,0,overlay).toBuffer('png', {}, function(err, buffer) {
+      renderImage(res, buffer);
+    });
   });
 }
 app.get(/^\/api\/(.*)/, function(req, res) {
+  res.set('Content-Type', 'image/png');
+
   // Default configuration
   var config = {
     theme: 13,
@@ -41,7 +45,13 @@ app.get(/^\/api\/(.*)/, function(req, res) {
   //      .send(data);
   // });
 
-  readImage(res);
+  fs.readFile('./public/templates/text.jpg', function(err, data) {
+    readImage(res, data);
+  });
+  // lwip.create(500, 500, 'yellow', function(err, image) {
+  //   if (err) throw err;
+  //   res.status(200).send('image');
+  // });
 });
 
 app.listen('3003', function() {

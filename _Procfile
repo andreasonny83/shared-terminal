@@ -1,0 +1,8 @@
+// check image magick version
+heroku run identify -version
+heroku config:add IMAGE_MAGICK_VERSION="6.9.3-8"
+// if you set buildpacks then your original buildpacks lost
+heroku buildpacks:add --index 1 https://github.com/ello/heroku-buildpack-imagemagick.git
+// commit
+git push heroku master
+heroku run identify -version
