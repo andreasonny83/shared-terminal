@@ -8,6 +8,10 @@ function renderImage(res, img) {
   res.status(200).set('Content-Type', 'image/png').send(img);
 }
 
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
+
 app.get(/^\/api\/(.*)/, function(req, res) {
   res.set('Content-Type', 'image/png');
 
