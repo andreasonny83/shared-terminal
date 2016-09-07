@@ -19,6 +19,6 @@
   "homepage": "https://github.com/andreasonny83/shared-terminal#readme",
   "devDependencies": {
     "express": "^4.14.0",
-    "lwip": "0.0.9"
+    "gm": "^1.23.0"
   }
 }

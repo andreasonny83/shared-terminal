@@ -1,20 +1,13 @@
 var express = require('express');
-var fs = require('fs');
-var lwip = require('lwip');
+var gm = require('gm').subClass({imageMagick: true});
 
 var app = express();
+app.set('port', (process.env.PORT || 3003));
 
 function renderImage(res, img) {
   res.status(200).set('Content-Type', 'image/png').send(img);
 }
 
-function readImage(res, overlay) {
-  lwip.open('./public/templates/001.png', function(err, image) {
-    image.batch().contain(800, 800).paste(0,0,overlay).toBuffer('png', {}, function(err, buffer) {
-      renderImage(res, buffer);
-    });
-  });
-}
 app.get(/^\/api\/(.*)/, function(req, res) {
   res.set('Content-Type', 'image/png');
 
@@ -32,28 +25,17 @@ app.get(/^\/api\/(.*)/, function(req, res) {
 
   console.log(params);
 
-  // fs.readFile('./public/templates/002.jpg', function(err, data) {
-  //   if (err) {
-  //     return res
-  //       .status(404)
-  //       .set('Content-Type', 'text/html')
-  //       .send('<div style="text-align:center;padding:100px,0;"><h1>404</h1><h2>Ooops, something went wrong</h2></div>');
-  //   }
-  //
-  //   res.status(200)
-  //      .set('Content-Type', 'image/png')
-  //      .send(data);
-  // });
+  gm('public/templates/001.png')
+    .fontSize(26)
+    .fill('#eaeaea')
+    .drawText(95, 210, "> sample text\nnew line")
+    .toBuffer('PNG',function (err, buffer) {
+      if (err) throw err;
 
-  fs.readFile('./public/templates/text.jpg', function(err, data) {
-    readImage(res, data);
-  });
-  // lwip.create(500, 500, 'yellow', function(err, image) {
-  //   if (err) throw err;
-  //   res.status(200).send('image');
-  // });
+      renderImage(res, buffer);
+    });
 });
 
-app.listen('3003', function() {
-  console.log('App listening on port 3003!');
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
 });
